@@ -191,6 +191,29 @@ mkdir build
 (cd build ; PICO_SDK_PATH=/path/to/sdk cmake .. <options>)
 ```
 
+### Build for ST7789 SPI 2.0" (240x320)
+
+For single-SPI ST7789 panels (pins like RESET, D/C, SDA, SCL, CS), configure CMake with `TFT_ST7789_SPI=ON` and disable the original RGB TFT path:
+
+```
+mkdir -p build
+cd build
+PICO_SDK_PATH=/path/to/sdk cmake .. \
+  -DTFT_ST7789_SPI=ON \
+  -DTFT_2P=OFF \
+  -DTFT_WIDTH=240 \
+  -DTFT_HEIGHT=320 \
+  -DTFT_SPI_MOSI=3 \
+  -DTFT_SPI_CLK=2 \
+  -DTFT_SPI_CS=14 \
+  -DTFT_DC=6 \
+  -DTFT_RESET=15 \
+  -DTFT_SPI_MHZ=40
+make -j
+```
+
+If your panel is mounted with a different orientation, set `-DTFT_MADCTL=<value>` (for example `0x60` for a common 90-degree rotation) and, when needed, `-DTFT_X_OFFSET`/`-DTFT_Y_OFFSET`.
+
 If you want more than the default 128K of memory, you need to build with the following option.
  
    * `-DMEMSIZE=<size in KB>`: The maximum practical size is about

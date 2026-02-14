@@ -25,7 +25,11 @@
 
 #ifndef TFT2P_H
 #define TFT2P_H
+#include <stdint.h>
 #define TFT_SPI_PAUSE   100   /* TFT SPI microseconds between each pin state change */
 void tft_init();
+#if TFT_ST7789_SPI
+void st7789_spi_render_frame(const uint32_t *framebuffer);
+#endif
 
 #endif
