@@ -57,7 +57,7 @@
 #include "ws2812.pio.h"
 #endif
 
-#if TFT_2P
+#if TFT_2P || TFT_ST7789_SPI
 #include "tft_2p.h"
 #endif
 
@@ -286,6 +286,7 @@ static void     core1_main()
 
         while (true) {
                 poll_umac();
+                video_task();
         }
 }
 
@@ -301,7 +302,7 @@ int     main()
         beep();
 #endif
 
-#if TFT_2P /* Need to initialise TFT before UMAC starts because SPI is shared between TFT and SD card */
+#if TFT_2P || TFT_ST7789_SPI /* Need to initialise TFT before UMAC starts because SPI is shared between TFT and SD card */
         printf("TFT init\n");
         tft_init();
 #endif
@@ -320,4 +321,3 @@ int     main()
 
 	return 0;
 }
-

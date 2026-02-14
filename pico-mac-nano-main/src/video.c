@@ -37,6 +37,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 #include <string.h>
+#include <stdbool.h>
 #include "pico/time.h"
 #include "hardware/clocks.h"
 #include "hardware/dma.h"
@@ -45,6 +46,28 @@
 #include "pio_video.pio.h"
 
 #include "hw.h"
+
+#if TFT_ST7789_SPI
+#include "tft_2p.h"
+
+static uint32_t *video_framebuffer;
+static absolute_time_t video_next_frame;
+
+void    video_init(uint32_t *framebuffer)
+{
+        video_framebuffer = framebuffer;
+        video_next_frame = get_absolute_time();
+}
+
+void    video_task(void)
+{
+        if (time_reached(video_next_frame)) {
+                st7789_spi_render_frame(video_framebuffer);
+                video_next_frame = delayed_by_ms(get_absolute_time(), 33);
+        }
+}
+
+#else
 
 ////////////////////////////////////////////////////////////////////////////////
 /* VESA VGA mode 640x480@60 */
@@ -315,6 +338,10 @@ static void     video_init_dma()
  * 
  * NJG : Added call to lcd_init()
  */
+void    video_task(void)
+{
+}
+
 void    video_init(uint32_t *framebuffer)
 {
         printf("Video init\n");
@@ -348,3 +375,4 @@ void    video_init(uint32_t *framebuffer)
         video_dma_prep_new();
         dma_channel_start(video_dmach_descr_cfg);
 }
+#endif
